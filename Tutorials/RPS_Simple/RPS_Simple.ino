@@ -33,6 +33,9 @@ void setup() {
   pinMode(RED_PIN, OUTPUT);
   pinMode(GREEN_PIN, OUTPUT);
   pinMode(BLUE_PIN, OUTPUT);
+  digitalWrite(RED_PIN, HIGH);
+  digitalWrite(GREEN_PIN, HIGH);
+  digitalWrite(BLUE_PIN, HIGH);
 
   pinMode(IR_READ_POWER, OUTPUT);
   pinMode(IR_READ, INPUT);
@@ -184,20 +187,20 @@ int led_stop = 0;
 void loop_led(){
   if(led_timer < led_stop){
     if(led_timer == 0){
-      digitalWrite(led_pin, HIGH);
+      digitalWrite(led_pin, LOW);
     }
     led_timer += LOOP_SPEED;
   }else{
-    digitalWrite(RED_PIN, LOW);
-    digitalWrite(GREEN_PIN, LOW);
-    digitalWrite(BLUE_PIN, LOW);
+    digitalWrite(RED_PIN, HIGH);
+    digitalWrite(GREEN_PIN, HIGH);
+    digitalWrite(BLUE_PIN, HIGH);
   }
 }
 
 void set_led(int pin, int timer){
-  digitalWrite(RED_PIN, LOW);
-  digitalWrite(GREEN_PIN, LOW);
-  digitalWrite(BLUE_PIN, LOW);
+  digitalWrite(RED_PIN, HIGH);
+  digitalWrite(GREEN_PIN, HIGH);
+  digitalWrite(BLUE_PIN, HIGH);
     
   led_pin = pin;
   led_timer = 0;

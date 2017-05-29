@@ -30,9 +30,9 @@ void setup() {
 }
 
 void loop() {
-  digitalWrite(RED_PIN, LOW);
-  digitalWrite(GREEN_PIN, LOW);
-  digitalWrite(BLUE_PIN, LOW);
+  digitalWrite(RED_PIN, HIGH);
+  digitalWrite(GREEN_PIN, HIGH);
+  digitalWrite(BLUE_PIN, HIGH);
   digitalWrite(IR_WRITE, LOW);
   digitalWrite(IR_READ_POWER, HIGH);
   
