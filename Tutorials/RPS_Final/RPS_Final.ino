@@ -1,6 +1,9 @@
 #include <EEPROM.h> 
+#include <avr/sleep.h>
+#include <avr/power.h>
 
 // Inputs
+#define BTN_POWER 2
 #define BTN_ROCK 3
 #define BTN_PAPER 12
 #define BTN_SCISSORS 11
@@ -30,6 +33,7 @@ bool read_buffer[READ_BUFFER_LENGTH];
 int my_choice = 0;
 int loop_delay = LOOP_SPEED;
 bool boot_flourish = true;
+int sleep_timer = 0;
 
 // IR Vars
 int irled_timer = -1;
@@ -53,7 +57,8 @@ int cnt_lose = 0;
 void setup() {
   //while (!Serial);
   Serial.begin(9600);
-  
+
+  pinMode(BTN_POWER, INPUT);
   pinMode(BTN_ROCK, INPUT);
   pinMode(BTN_PAPER, INPUT);
   pinMode(BTN_SCISSORS, INPUT);
@@ -89,6 +94,17 @@ void loop() {
   // Show boot up lights
   if(boot_flourish){
     boot_lights();
+  }
+
+  // Sleeper
+  if(irled_timer == -1){
+    sleep_timer += loop_delay;
+  }else{
+    sleep_timer = 0;
+  }
+
+  if(sleep_timer > 30000){
+    enterSleep();
   }
   
   // Buttons
@@ -288,6 +304,50 @@ void boot_lights(){
   }
   digitalWrite(BLUE_PIN, HIGH);
   boot_flourish = false;
+}
+
+// Power / sleep functions
+void pin2Interrupt(void)
+{
+  detachInterrupt(digitalPinToInterrupt(BTN_POWER));
+}
+
+void enterSleep(void)
+{
+  digitalWrite(RED_PIN, LOW);
+  delay(100);
+  digitalWrite(RED_PIN, HIGH);
+  delay(100);
+  digitalWrite(RED_PIN, LOW);
+  delay(100);
+  digitalWrite(RED_PIN, HIGH);
+  delay(100);
+  digitalWrite(RED_PIN, LOW);
+  delay(100);
+  digitalWrite(RED_PIN, HIGH);
+  sleep_timer = 0; // so we dont immediatly re-sleep
+  Serial.println("sleeping");
+  
+  /* Setup pin2 as an interrupt and attach handler. */
+  attachInterrupt(digitalPinToInterrupt(BTN_POWER), pin2Interrupt, HIGH);
+  delay(100);
+
+  ADCSRA = 0;
+  //power_adc_disable();
+  
+  set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+  
+  sleep_enable();
+  MCUCR = bit (BODS) | bit (BODSE);  // turn on brown-out enable select
+  MCUCR = bit (BODS);        // this must be done within 4 clock cycles of above
+  interrupts ();
+  sleep_mode();
+  
+  /* The program will continue from here. */
+  
+  /* First thing to do is disable sleep. */
+  sleep_disable(); 
+  Serial.println("back from sleep");
 }
 
 // Helper functions
