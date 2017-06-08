@@ -3,9 +3,9 @@
 #define BTN_PAPER 11
 #define BTN_SCISSORS 12
 
-#define RED_PIN 5
+#define RED_PIN 7
 #define GREEN_PIN 6
-#define BLUE_PIN 7
+#define BLUE_PIN 5
 
 #define IR_READ_POWER 9
 #define IR_READ A7
@@ -158,7 +158,11 @@ void set_irled(int modtype, int timer){
 // print out the result
 void print_result(){
   if(opponent_result == -1){
-    set_led(BLUE_PIN, 250);
+    digitalWrite(RED_PIN, LOW);
+    digitalWrite(GREEN_PIN, LOW);
+    delay(250);
+    digitalWrite(RED_PIN, HIGH);
+    digitalWrite(GREEN_PIN, HIGH);
     return;  
   }
   
